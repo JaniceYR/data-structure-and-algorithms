@@ -4,6 +4,9 @@ end
 
 class Array
   def hash
+    self.each_with_index do |element, index|
+      
+    end
   end
 end
 
