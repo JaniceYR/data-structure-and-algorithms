@@ -4,6 +4,7 @@ require_relative 'heap'
 # return the k-largest elements in `O(k + (n-k)logk)` time.
 
 def k_largest_elements(array, k)
+  # k_elements = array[0...k]
   k_elements = BinaryMinHeap.heapify_down(array[0...k], 0, k)
   array[k..-1].each do |ele|
     if ele > k_elements[0]
