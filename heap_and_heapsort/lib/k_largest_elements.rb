@@ -3,6 +3,8 @@ require_relative 'heap'
 # Given an `array` and an integer `k`,
 # return the k-largest elements in `O(k + (n-k)logk)` time.
 
+
+# `O(klogk + (n-k)klogk)` ?
 def k_largest_elements(array, k)
   # k_elements = array[0...k]
   k_elements = BinaryMinHeap.heapify_down(array[0...k], 0, k)
@@ -13,4 +15,18 @@ def k_largest_elements(array, k)
     end
   end
   k_elements
+end
+
+
+# `O(klogk + (n-k)logk)`
+def k_largest_elements2(array, k)
+  result = BinaryMinHeap.new
+  k.times do
+    result.push(array.pop)
+  end
+  until array.empty?
+    result.push(array.pop)
+    result.extract
+  end
+  result.store
 end
