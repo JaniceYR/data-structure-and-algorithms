@@ -13,8 +13,9 @@ class BinaryMinHeap
   end
 
   def extract
-    first = @store.shift
-    @store = BinaryMinHeap.heapify_down(@store, 0, @prc)
+    @store[0], @store[-1] = @store[-1], @store[0]
+    first = @store.pop
+    @store = BinaryMinHeap.heapify_down(@store, 0, count, &@prc)
     first
   end
 
@@ -24,7 +25,7 @@ class BinaryMinHeap
 
   def push(val)
     @store.push(val)
-    @store = BinaryMinHeap.heapify_up(@store, @store.length-1, @prc)
+    @store = BinaryMinHeap.heapify_up(@store, @store.length-1, &@prc)
   end
 
   public
@@ -43,25 +44,26 @@ class BinaryMinHeap
   end
 
   def self.heapify_down(array, parent_idx, len = array.length, &prc)
-    prc ? prc : prc = Proc.new { |el1, el2| (el1 <=> el2) }
+    prc ||= Proc.new { |el1, el2| (el1 <=> el2) }
     until BinaryMinHeap.child_indices(len, parent_idx).empty?
       children = BinaryMinHeap.child_indices(len, parent_idx)
-      if children.length == 1 || prc.call(children[0], children[1]) < 0
-        if prc.call(array[children[0]], array[parent_idx]) < 0
-          array[parent_idx], array[children[0]] = array[children[0]], array[parent_idx]
-        end
+      # byebug
+      if (children.length == 1 || prc.call(array[children[0]], array[children[1]]) < 0) &&
+        (prc.call(array[children[0]], array[parent_idx]) < 0)
+        array[parent_idx], array[children[0]] = array[children[0]], array[parent_idx]
+        parent_idx = children[0]
+      elsif (children.length == 2) && prc.call(array[children[1]], array[parent_idx]) < 0
+        array[parent_idx], array[children[1]] = array[children[1]], array[parent_idx]
+        parent_idx = children[1]
       else
-        if prc.call(array[children[1]], array[parent_idx]) < 0
-          array[parent_idx], array[children[1]] = array[children[1]], array[parent_idx]
-        end
+        return array
       end
-      parent_idx += 1
     end
     array
   end
 
   def self.heapify_up(array, child_idx, len = array.length, &prc)
-    prc ? prc : prc = Proc.new { |el1, el2| (el1 <=> el2) }
+    prc ||= Proc.new { |el1, el2| (el1 <=> el2) }
     while child_idx >= 1
       parent_idx = BinaryMinHeap.parent_index(child_idx)
       if prc.call(array[child_idx], array[parent_idx]) < 0
