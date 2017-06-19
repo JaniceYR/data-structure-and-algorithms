@@ -60,6 +60,13 @@ class BinarySearchTree
     arr
   end
 
+  def de_order_traversal(tree_node = @root, arr = [])
+    de_order_traversal(tree_node.right, arr) if tree_node.right
+    arr << tree_node
+    de_order_traversal(tree_node.left, arr) if tree_node.left
+    arr
+  end
+
   private
   # optional helper methods go here:
   def self.insert_subtree(root, value)
