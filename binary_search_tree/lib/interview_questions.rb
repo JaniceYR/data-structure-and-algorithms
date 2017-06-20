@@ -15,11 +15,21 @@ def pre_order_traversal(tree_node = @root, arr = [])
 end
 
 # In Order Iterative:
-def in_order_traversal(tree_node = @root, arr = [])
-  in_order_traversal(tree_node.left, arr) if tree_node.left
-  arr << tree_node.value
-  in_order_traversal(tree_node.right, arr) if tree_node.right
-  arr
+def in_order_traversal(tree_node = @root)
+  stack = []
+
+  current_node = tree_node
+  until current_node.nil?
+    stack.push(current_node)
+    current_node = current_node.left
+  end
+
+  if stack.empty?
+    last_node = stack.pop
+    p last_node
+    current_node = current_node.right
+  end
+
 end
 
 # LCA:
