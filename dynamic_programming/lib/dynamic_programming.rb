@@ -11,10 +11,11 @@ class DynamicProgramming
                   }
     @super_frog_cache = {
                           1 => {
-                                  0 => [[]], 
+                                  0 => [[]],
                                   1 => [[1]]
                                 }
                         }
+    @maze_cache = {}
   end
 
   def blair_nums(n)
@@ -80,8 +81,67 @@ class DynamicProgramming
   end
 
   def make_change(amt, coins)
+    return [] if amt == 0
+    return nil if coins.none? { |coin| coin <= amt }
+
+    coins = coins.sort.reverse
+
+    best_change = nil
+    coins.each_with_index do |coin, index|
+      next if coin > amt
+      remainder = amt - coin
+
+      best_remainder = make_change(remainder, coins.drop(index))
+      next if best_remainder.nil?
+
+      this_change = [coin] + best_remainder
+      if (best_change.nil? || (this_change.count < best_change.count))
+        best_change = this_change
+      end
+    end
+
+    best_change = best_change ? best_change.sort : nil
   end
 
   def maze_solver(maze, start_pos, end_pos)
+    populate_maze_cache(maze)
+    solve_maze(maze, start_pos, end_pos)
+    p @maze_cache
+    @maze_cache[end_pos[0]][end_pos[1]]
+  end
+
+  private
+
+  def populate_maze_cache(maze)
+    maze.each_with_index do |column, i|
+      @maze_cache[i] = {}
+      column.each_with_index do |row, j|
+        if row == ' ' || row == 'F'
+          @maze_cache[i][j] = []
+        elsif row == 'S'
+          @maze_cache[i][j] = [[i, j]]
+        end
+      end
+    end
+  end
+
+  def solve_maze(maze, start_pos, finish_pos)
+    return nil unless @maze_cache[start_pos[0]][start_pos[1]]
+    return nil if start_pos[0] < 0 || start_pos[1] >= maze.length
+    return nil if start_pos[1] < 0 || start_pos[1] >= maze[0].length
+    # return @maze_cache unless @maze_cache[finish_pos[0]][finish_pos[1]].empty?
+    if @maze_cache[start_pos[0]][start_pos[1]].empty?
+      @maze_cache[start_pos[0]][start_pos[1]] = [start_pos]
+      return [start_pos]
+    end
+    @maze_cache.each do |column|
+      column.each do |row|
+        @maze_cache[column+1][row] = [start_pos] + [column+1, row] if solve_maze(maze, [column+1, row], finish_pos)
+        @maze_cache[column][row+1] = [start_pos] + [column, row+1] if solve_maze(maze, [column, row+1], finish_pos)
+        @maze_cache[column-1][row] = [start_pos] + [column-1, row] if solve_maze(maze, [column-1, row], finish_pos)
+        @maze_cache[column][row-1] = [start_pos] + [column, row-1] if solve_maze(maze, [column, row-1], finish_pos)
+      end
+    end
+    @maze_cache
   end
 end
