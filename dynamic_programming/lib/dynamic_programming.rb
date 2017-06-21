@@ -134,12 +134,12 @@ class DynamicProgramming
       @maze_cache[start_pos[0]][start_pos[1]] = [start_pos]
       return [start_pos]
     end
-    @maze_cache.each do |column|
-      column.each do |row|
-        @maze_cache[column+1][row] = [start_pos] + [column+1, row] if solve_maze(maze, [column+1, row], finish_pos)
-        @maze_cache[column][row+1] = [start_pos] + [column, row+1] if solve_maze(maze, [column, row+1], finish_pos)
-        @maze_cache[column-1][row] = [start_pos] + [column-1, row] if solve_maze(maze, [column-1, row], finish_pos)
-        @maze_cache[column][row-1] = [start_pos] + [column, row-1] if solve_maze(maze, [column, row-1], finish_pos)
+    @maze_cache.each do |keyi, column|
+      column.each do |keyj, row|
+        @maze_cache[keyi+1][keyj] += [start_pos] + [keyi+1, keyj] if solve_maze(maze, [keyi+1, keyj], finish_pos)
+        @maze_cache[keyi][keyj+1] += [start_pos] + [keyi, keyj+1] if solve_maze(maze, [keyi, keyj+1], finish_pos)
+        @maze_cache[keyi-1][keyj] += [start_pos] + [keyi-1, keyj] if solve_maze(maze, [keyi-1, keyj], finish_pos)
+        @maze_cache[keyi][keyj-1] += [start_pos] + [keyi, keyj-1] if solve_maze(maze, [keyi, keyj-1], finish_pos)
       end
     end
     @maze_cache
