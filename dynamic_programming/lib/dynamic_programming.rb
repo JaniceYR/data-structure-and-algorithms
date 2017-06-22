@@ -105,8 +105,8 @@ class DynamicProgramming
 
   def maze_solver(maze, start_pos, end_pos)
     populate_maze_cache(maze)
-    solve_maze(maze, start_pos, end_pos)
     p @maze_cache
+    solve_maze(maze, start_pos, end_pos)
     @maze_cache[end_pos[0]][end_pos[1]]
   end
 
@@ -120,16 +120,18 @@ class DynamicProgramming
           @maze_cache[i][j] = []
         elsif row == 'S'
           @maze_cache[i][j] = [[i, j]]
+        else
+          @maze_cache[i][j] = nil
         end
       end
     end
   end
 
   def solve_maze(maze, start_pos, finish_pos)
-    return nil unless @maze_cache[start_pos[0]][start_pos[1]]
     return nil if start_pos[0] < 0 || start_pos[1] >= maze.length
     return nil if start_pos[1] < 0 || start_pos[1] >= maze[0].length
-    # return @maze_cache unless @maze_cache[finish_pos[0]][finish_pos[1]].empty?
+    return nil unless @maze_cache[start_pos[0]][start_pos[1]]
+    return @maze_cache unless @maze_cache[finish_pos[0]][finish_pos[1]].empty?
     if @maze_cache[start_pos[0]][start_pos[1]].empty?
       @maze_cache[start_pos[0]][start_pos[1]] = [start_pos]
       return [start_pos]
